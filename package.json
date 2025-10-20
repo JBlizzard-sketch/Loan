@@ -1,0 +1,16 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "An AI-powered operational and analytical system for Kechita Microfinance, designed to automate daily communications, generate financial insights, and provide decision support for loan operations across 100+ branches in Kenya.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lucide-react": "^0.546.0",
+    "recharts": "^3.3.0"
+  }
+}

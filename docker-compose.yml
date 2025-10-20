@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: kechita-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kechita_db}
+      POSTGRES_USER: ${POSTGRES_USER:-kechita}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kechita_password_change_me}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kechita Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kechita-app
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kechita}:${POSTGRES_PASSWORD:-kechita_password_change_me}@postgres:5432/${POSTGRES_DB:-kechita_db}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_WHATSAPP_NUMBER: ${TWILIO_WHATSAPP_NUMBER}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: kechita-network
